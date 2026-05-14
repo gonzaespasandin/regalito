@@ -16,7 +16,7 @@
 
 | Capa | Tecnología |
 |---|---|
-| Framework | Next.js 15 (App Router, RSC) |
+| Framework | Next.js 16 (App Router, RSC) |
 | Lenguaje | TypeScript (strict) |
 | Estilos | Tailwind CSS v4 |
 | UI components | shadcn/ui |
@@ -51,6 +51,7 @@
 - `description` text
 - `requirements` text[] (lista de requisitos: "Tener cuenta en Starbucks Rewards", "DNI con fecha de nacimiento", etc.)
 - `address` text (dirección o "Todas las sucursales")
+- `image_url` text (nullable; foto/logo de la marca, apunta a un objeto del bucket de Storage `gift-images`)
 - `city_id` uuid fk → cities
 - `category_id` uuid fk → categories
 - `source_url` text (link al post/web donde se confirma la promo)
@@ -121,6 +122,8 @@
 - **Slugs estables.** Generar al crear, nunca regenerar al editar el nombre.
 - **Naming:** archivos `kebab-case`, componentes `PascalCase`, funciones `camelCase`.
 - **No comentarios obvios.** Sí comentarios cuando hay un *por qué* no evidente.
+- **SOLID, POO, Clean Code y escalabilidad** son criterios permanentes — ver sección 11.
+- **Antes de tocar código de un dominio, leer la skill correspondiente** de `.agents/skills/` — ver sección 11.
 
 ## 6. Branding y diseño
 
@@ -152,23 +155,28 @@ Ver `.env.example` para la plantilla. Variables requeridas:
 | Variable | Scope | Descripción |
 |---|---|---|
 | `NEXT_PUBLIC_SUPABASE_URL` | public | URL del proyecto Supabase |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | public | Anon key (RLS-protected) |
+| `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | public | Publishable key (RLS-protected). Supabase migró de `anon` keys a publishable keys; las legacy `anon` siguen funcionando pero usamos la nueva. |
 | `SUPABASE_SERVICE_ROLE_KEY` | **server-only** | Bypass de RLS para operaciones admin |
 | `ADMIN_EMAILS` | server | CSV de emails con acceso al dashboard (ej: `me@x.com,vos@y.com`) |
 | `RESEND_API_KEY` | server | (Opcional Fase 1) Para emails transaccionales |
 
-**Nunca** commitear `.env.local`. Solo `.env.example`.
+**Nunca** commitear `.env` ni `.env.local`. Solo `.env.example` (sin valores reales).
 
-## 9. Próximos pasos concretos
+## 9. Progreso y próximos pasos
 
-Próxima sesión arranca con:
+**Hecho:**
+- ✅ Scaffolding Next.js 16 + Tailwind v4 + shadcn/ui (`button`, `card`, `input`, `select`, `dialog`).
+- ✅ Branding cálido aplicado (`globals.css`, paleta de sección 6).
+- ✅ Landing (hero + cómo funciona) + header/footer + placeholders `/regalitos` y `/sumar`.
+- ✅ Schema SQL Fase 1 + RLS + bucket de Storage `gift-images` aplicados en Supabase.
+- ✅ Clientes Supabase (`src/lib/supabase/`) + tipos generados.
 
-1. `npx create-next-app@latest . --typescript --tailwind --app --eslint --src-dir --import-alias "@/*"` (en el directorio actual, ya inicializado).
-2. `pnpm dlx shadcn@latest init` y agregar componentes base (`button`, `card`, `input`, `select`, `dialog`).
-3. Crear proyecto en Supabase, copiar URL + anon key a `.env.local`.
-4. Escribir migration SQL inicial con las 4 tablas de Fase 1 + RLS policies.
-5. Generar tipos: `pnpm db:types`.
-6. Implementar landing + listado con datos seed.
+**Próxima sesión:**
+1. `/regalitos` — listado con filtros por ciudad y categoría (server-side).
+2. `/regalo/[slug]` — detalle + OG image con `next/og`.
+3. `/sumar` — formulario público con Zod + server action → cola de `submissions`.
+4. `/admin` — login magic link + allowlist por email; CRUD de gifts; cola de submissions; subida de imágenes de marca.
+5. Vercel Analytics + deploy.
 
 ## 10. Decisiones explícitas (para no relitigar)
 
@@ -177,3 +185,31 @@ Próxima sesión arranca con:
 - **Submissions:** SIEMPRE pasan por cola de moderación. Nunca publicación directa.
 - **Dominio custom:** Después de validar el producto. Empezar con `.vercel.app`.
 - **i18n:** Solo español (AR) hasta Fase 3.
+
+## 11. Skills y prácticas de ingeniería
+
+### Skills (en `.agents/skills/`)
+
+Son skills basadas en archivos (`SKILL.md` + referencias). **Regla: antes de escribir o modificar código de un dominio, leer la `SKILL.md` correspondiente y seguir su guía.** No son opcionales.
+
+| Skill | Cuándo consultarla |
+|---|---|
+| `supabase` | Cualquier cosa de Supabase: schema, migraciones, RLS, Auth, Storage, Edge Functions, CLI/MCP. |
+| `next-best-practices` | Patrones de Next.js: RSC, data fetching, async, bundling, metadata, route handlers. |
+| `next-cache-components` | Caching y `"use cache"` / cache components. |
+| `next-upgrade` | Al subir de versión de Next.js. |
+| `react-best-practices` | Componentes, hooks, estado, performance de React. |
+| `composition-patterns` | Composición de componentes y módulos. |
+| `shadcn` | Agregar/personalizar componentes shadcn/ui, uso del CLI. |
+| `tailwind-v4-shadcn` / `tailwind-css-patterns` | Estilos con Tailwind v4 y tokens de shadcn. |
+| `frontend-design` | Diseño de UI: layout, jerarquía visual, calidad de la interfaz. |
+| `accessibility` | Accesibilidad (WCAG): roles, foco, contraste, teclado. |
+| `seo` | Metadata, structured data, sitemap, performance de búsqueda. |
+| `nodejs-backend-patterns` / `nodejs-best-practices` | Lógica de servidor: server actions, servicios, acceso a datos. |
+| `typescript-advanced-types` | Tipos avanzados, genéricos, inferencia. |
+
+### Principios permanentes
+
+- **SOLID / POO.** Responsabilidad única por módulo, componente y server action. Dependencias inyectadas (ej: pasar el cliente Supabase como argumento, no instanciarlo adentro de una función de dominio). En React se prioriza **composición sobre herencia**; POO se aplica de forma pragmática — patrón repository/service para acceso a datos cuando aporta claridad (ver `nodejs-backend-patterns`).
+- **Escalabilidad.** Pensar el modelo de datos, las queries y los índices, y la estructura de carpetas previendo Fases 2-3 (ya esbozadas en secciones 3 y 4). No optimizar de más, pero no cerrarse puertas.
+- **Clean Code.** Nombres expresivos, funciones chicas con un solo nivel de abstracción, cero duplicación, sin comentarios obvios (solo el *por qué* no evidente). Borrar código muerto en vez de comentarlo.
