@@ -44,6 +44,53 @@ export async function submitClaimAction(
   return { ok: true };
 }
 
+/**
+ * Reacción rápida desde el listado: setea outcome sin comentario.
+ * Si el user ya tenía la misma reacción, la borra (toggle). Si tenía
+ * la opuesta, la cambia. Devuelve void para usarlo directo como form action.
+ */
+export async function quickClaimAction(
+  giftId: string,
+  outcome: "claimed" | "failed",
+): Promise<void> {
+  const current = await getCurrentUser();
+  if (!current) return;
+
+  const supabase = await createSupabaseServerClient();
+
+  const { data: existing } = await supabase
+    .from("gift_claims")
+    .select("outcome")
+    .eq("gift_id", giftId)
+    .eq("profile_id", current.user.id)
+    .maybeSingle();
+
+  if (existing?.outcome === outcome) {
+    // Toggle off: misma reacción → borrar.
+    await supabase
+      .from("gift_claims")
+      .delete()
+      .eq("gift_id", giftId)
+      .eq("profile_id", current.user.id);
+  } else if (existing) {
+    // Cambio de outcome — preservamos el comment (UPDATE no toca lo que
+    // no le pasamos, a diferencia del upsert que setea todo).
+    await supabase
+      .from("gift_claims")
+      .update({ outcome })
+      .eq("gift_id", giftId)
+      .eq("profile_id", current.user.id);
+  } else {
+    await supabase.from("gift_claims").insert({
+      profile_id: current.user.id,
+      gift_id: giftId,
+      outcome,
+    });
+  }
+
+  revalidatePath("/", "layout");
+}
+
 /** Borra el claim del usuario actual sobre este gift. */
 export async function deleteClaimAction(giftId: string): Promise<void> {
   const current = await getCurrentUser();

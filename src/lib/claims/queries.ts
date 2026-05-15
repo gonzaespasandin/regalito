@@ -78,6 +78,31 @@ export async function getClaimsForGift(
   return (data ?? []) as ClaimWithProfile[];
 }
 
+/**
+ * Para una lista de gifts, devuelve el outcome del claim del user actual
+ * sobre cada uno (o nada si no reaccionó). Para el overlay en listados.
+ */
+export async function getOwnClaimsByGiftIds(
+  supabase: SupabaseDb,
+  profileId: string,
+  giftIds: string[],
+): Promise<Map<string, Tables<"gift_claims">["outcome"]>> {
+  const result = new Map<string, Tables<"gift_claims">["outcome"]>();
+  if (giftIds.length === 0) return result;
+
+  const { data, error } = await supabase
+    .from("gift_claims")
+    .select("gift_id, outcome")
+    .eq("profile_id", profileId)
+    .in("gift_id", giftIds);
+  if (error) throw error;
+
+  for (const row of data ?? []) {
+    result.set(row.gift_id, row.outcome);
+  }
+  return result;
+}
+
 /** Claim del user actual sobre un gift, si existe. */
 export async function getOwnClaim(
   supabase: SupabaseDb,

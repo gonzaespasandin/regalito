@@ -6,7 +6,10 @@ import { Heart } from "lucide-react";
 import { GiftCard } from "@/components/gifts/gift-card";
 import { buttonVariants } from "@/components/ui/button";
 import { getCurrentUser } from "@/lib/auth/user";
-import { getClaimCountsByGiftIds } from "@/lib/claims/queries";
+import {
+  getClaimCountsByGiftIds,
+  getOwnClaimsByGiftIds,
+} from "@/lib/claims/queries";
 import { getFavoriteGifts } from "@/lib/favorites/queries";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { cn } from "@/lib/utils";
@@ -21,10 +24,11 @@ export default async function FavoritosPage() {
 
   const supabase = await createSupabaseServerClient();
   const gifts = await getFavoriteGifts(supabase);
-  const claimCounts = await getClaimCountsByGiftIds(
-    supabase,
-    gifts.map((gift) => gift.id),
-  );
+  const giftIds = gifts.map((gift) => gift.id);
+  const [claimCounts, ownClaims] = await Promise.all([
+    getClaimCountsByGiftIds(supabase, giftIds),
+    getOwnClaimsByGiftIds(supabase, current.user.id, giftIds),
+  ]);
 
   return (
     <main className="mx-auto w-full max-w-5xl flex-1 px-6 py-16">
@@ -64,6 +68,7 @@ export default async function FavoritosPage() {
               gift={gift}
               isFavorited
               claimCounts={claimCounts.get(gift.id) ?? null}
+              ownClaim={ownClaims.get(gift.id) ?? null}
             />
           ))}
         </div>

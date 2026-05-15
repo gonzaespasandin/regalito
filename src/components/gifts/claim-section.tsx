@@ -37,7 +37,7 @@ function formatDate(iso: string): string {
 function OutcomeBadge({ outcome }: { outcome: Outcome }) {
   if (outcome === "claimed") {
     return (
-      <span className="inline-flex items-center gap-1 rounded-full bg-primary/15 px-2.5 py-0.5 text-xs font-medium text-primary">
+      <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-medium text-emerald-800">
         <CheckCircle2 className="size-3.5" />
         Pudo reclamarlo
       </span>
@@ -64,7 +64,7 @@ function Stats({ counts }: { counts: ClaimCounts }) {
   return (
     <div className="flex flex-wrap items-center gap-3 text-sm">
       <span className="inline-flex items-center gap-1.5 font-medium">
-        <ThumbsUp className="size-4 text-primary" />
+        <ThumbsUp className="size-4 text-emerald-600" />
         {counts.claimed} pudieron
       </span>
       <span className="inline-flex items-center gap-1.5 font-medium">
@@ -149,7 +149,7 @@ export function ClaimSection({
               type="button"
               size="lg"
               onClick={() => setOutcomeChoice("claimed")}
-              className="gradient-brand h-12 flex-1 border-0 text-white hover:opacity-90"
+              className="h-12 flex-1 cursor-pointer border-0 bg-emerald-600 text-white hover:bg-emerald-700"
             >
               <ThumbsUp className="size-5" />
               Pude reclamarlo
@@ -159,7 +159,7 @@ export function ClaimSection({
               size="lg"
               variant="outline"
               onClick={() => setOutcomeChoice("failed")}
-              className="h-12 flex-1"
+              className="h-12 flex-1 cursor-pointer"
             >
               <ThumbsDown className="size-5" />
               No pude reclamarlo
@@ -310,9 +310,9 @@ function ClaimForm({
           type="button"
           onClick={() => onOutcomeChange("claimed")}
           className={cn(
-            "inline-flex flex-1 items-center justify-center gap-2 rounded-lg border px-4 py-2 text-sm font-medium transition-colors",
+            "inline-flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-lg border px-4 py-2 text-sm font-medium transition-colors",
             outcome === "claimed"
-              ? "border-primary bg-primary/10 text-primary"
+              ? "border-emerald-600 bg-emerald-50 text-emerald-700"
               : "border-input text-muted-foreground hover:bg-muted",
           )}
         >
@@ -323,7 +323,7 @@ function ClaimForm({
           type="button"
           onClick={() => onOutcomeChange("failed")}
           className={cn(
-            "inline-flex flex-1 items-center justify-center gap-2 rounded-lg border px-4 py-2 text-sm font-medium transition-colors",
+            "inline-flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-lg border px-4 py-2 text-sm font-medium transition-colors",
             outcome === "failed"
               ? "border-foreground/40 bg-muted text-foreground"
               : "border-input text-muted-foreground hover:bg-muted",

@@ -28,7 +28,7 @@ export function FavoriteButton({
         type="submit"
         aria-label={isFavorited ? "Quitar de favoritos" : "Guardar como favorito"}
         className={cn(
-          "inline-flex items-center justify-center rounded-full bg-background/90 text-foreground/80 shadow-sm ring-1 ring-foreground/10 transition-colors",
+          "inline-flex cursor-pointer items-center justify-center rounded-full bg-background/90 text-foreground/80 shadow-sm ring-1 ring-foreground/10 transition-colors",
           "hover:bg-background hover:text-primary",
           dimensions,
         )}
