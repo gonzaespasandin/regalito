@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { ArrowLeft, Check, ExternalLink, Gift, MapPin } from "lucide-react";
 
 import { buttonVariants } from "@/components/ui/button";
+import { optimizedImageUrl } from "@/lib/cloudinary";
 import { getGiftBySlug } from "@/lib/gifts/queries";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { cn } from "@/lib/utils";
@@ -44,7 +45,7 @@ export default async function GiftPage({ params }: { params: Params }) {
   return (
     <main className="mx-auto w-full max-w-3xl flex-1 px-6 py-12">
       <Link
-        href="/regalitos"
+        href="/#regalitos"
         className="inline-flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
       >
         <ArrowLeft className="size-4" />
@@ -54,7 +55,7 @@ export default async function GiftPage({ params }: { params: Params }) {
       <div className="relative mt-6 aspect-[16/9] w-full overflow-hidden rounded-2xl bg-secondary">
         {gift.image_url ? (
           <Image
-            src={gift.image_url}
+            src={optimizedImageUrl(gift.image_url)}
             alt={gift.business_name}
             fill
             sizes="(min-width: 768px) 768px, 100vw"

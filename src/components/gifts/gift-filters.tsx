@@ -18,8 +18,9 @@ const selectClass = cn(
 );
 
 /**
- * Barra de filtros del listado. El estado vive en la URL (?ciudad=&categoria=),
- * así que es shareable y el filtrado real lo hace el Server Component.
+ * Barra de filtros del listado del home. El estado vive en la URL
+ * (?ciudad=&categoria=), así que es shareable y el filtrado real lo hace el
+ * Server Component. `scroll: false` evita saltar al top al filtrar.
  */
 export function GiftFilters({ cities, categories }: GiftFiltersProps) {
   const router = useRouter();
@@ -38,7 +39,7 @@ export function GiftFilters({ cities, categories }: GiftFiltersProps) {
         params.delete(key);
       }
       const queryString = params.toString();
-      router.push(queryString ? `/regalitos?${queryString}` : "/regalitos");
+      router.push(queryString ? `/?${queryString}` : "/", { scroll: false });
     },
     [router, searchParams],
   );
@@ -76,7 +77,7 @@ export function GiftFilters({ cities, categories }: GiftFiltersProps) {
       {hasFilters && (
         <button
           type="button"
-          onClick={() => router.push("/regalitos")}
+          onClick={() => router.push("/", { scroll: false })}
           className="inline-flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
         >
           <X className="size-4" />

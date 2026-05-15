@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { useFieldArray, useForm } from "react-hook-form";
+import { useFieldArray, useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Plus, X } from "lucide-react";
+import { Loader2, Plus, Upload, X } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,7 +12,10 @@ import { Textarea } from "@/components/ui/textarea";
 import type { Tables } from "@/lib/database.types";
 import type { AdminGift } from "@/lib/gifts/admin";
 import { giftFormSchema, type GiftFormInput } from "@/lib/gifts/schema";
-import type { GiftActionResult } from "@/app/admin/(dashboard)/regalos/actions";
+import {
+  uploadGiftImageAction,
+  type GiftActionResult,
+} from "@/app/admin/(dashboard)/regalos/actions";
 import { cn } from "@/lib/utils";
 
 type GiftFormProps = {
@@ -73,11 +76,14 @@ export function GiftForm({
   submitLabel,
 }: GiftFormProps) {
   const [serverError, setServerError] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
 
   const {
     register,
     control,
     handleSubmit,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm<GiftFormInput>({
     resolver: zodResolver(giftFormSchema),
@@ -88,6 +94,27 @@ export function GiftForm({
     control,
     name: "requirements",
   });
+
+  const imageUrl = useWatch({ control, name: "imageUrl" });
+
+  async function onImageChange(event: React.ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    setUploading(true);
+    setUploadError(null);
+
+    const formData = new FormData();
+    formData.append("file", file);
+    const result = await uploadGiftImageAction(formData);
+
+    if (result.ok) {
+      setValue("imageUrl", result.url, { shouldValidate: true });
+    } else {
+      setUploadError(result.error);
+    }
+    setUploading(false);
+  }
 
   async function onSubmit(values: GiftFormInput) {
     setServerError(null);
@@ -220,13 +247,43 @@ export function GiftForm({
           <FieldError message={errors.sourceUrl?.message} />
         </div>
         <div className="flex flex-col gap-2">
-          <Label htmlFor="imageUrl">URL de la imagen (opcional)</Label>
-          <Input
-            id="imageUrl"
-            placeholder="https://..."
-            {...register("imageUrl")}
-          />
-          <FieldError message={errors.imageUrl?.message} />
+          <Label htmlFor="image">Imagen de la marca (opcional)</Label>
+          <div className="flex items-center gap-3">
+            {imageUrl ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={imageUrl}
+                alt="Imagen del regalito"
+                className="size-14 shrink-0 rounded-lg object-cover ring-1 ring-foreground/10"
+              />
+            ) : null}
+            <label
+              className={cn(
+                "inline-flex h-9 cursor-pointer items-center gap-1.5 rounded-lg border border-input bg-card px-3 text-sm transition-colors hover:bg-muted",
+                uploading && "pointer-events-none opacity-60",
+              )}
+            >
+              {uploading ? (
+                <Loader2 className="size-4 animate-spin" />
+              ) : (
+                <Upload className="size-4" />
+              )}
+              {uploading
+                ? "Subiendo..."
+                : imageUrl
+                  ? "Cambiar imagen"
+                  : "Subir imagen"}
+              <input
+                id="image"
+                type="file"
+                accept="image/*"
+                className="sr-only"
+                onChange={onImageChange}
+                disabled={uploading}
+              />
+            </label>
+          </div>
+          <FieldError message={uploadError ?? errors.imageUrl?.message} />
         </div>
       </div>
 

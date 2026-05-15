@@ -44,15 +44,23 @@ export default async function AdminGiftsPage() {
             {gifts.length} regalito{gifts.length === 1 ? "" : "s"} en total.
           </p>
         </div>
-        <Link
-          href="/admin/regalos/nuevo"
-          className={cn(
-            buttonVariants(),
-            "gradient-brand border-0 text-white hover:opacity-90",
-          )}
-        >
-          Cargar un regalito
-        </Link>
+        <div className="flex flex-wrap gap-2">
+          <Link
+            href="/admin/regalos/importar"
+            className={cn(buttonVariants({ variant: "outline" }))}
+          >
+            Importar desde Excel
+          </Link>
+          <Link
+            href="/admin/regalos/nuevo"
+            className={cn(
+              buttonVariants(),
+              "gradient-brand border-0 text-white hover:opacity-90",
+            )}
+          >
+            Cargar un regalito
+          </Link>
+        </div>
       </header>
 
       <div className="mt-8 overflow-hidden rounded-2xl bg-card ring-1 ring-foreground/10">

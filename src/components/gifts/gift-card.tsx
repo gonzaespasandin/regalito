@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Gift, MapPin } from "lucide-react";
 
+import { optimizedImageUrl } from "@/lib/cloudinary";
 import type { GiftWithRelations } from "@/lib/gifts/queries";
 
 export function GiftCard({ gift }: { gift: GiftWithRelations }) {
@@ -15,7 +16,7 @@ export function GiftCard({ gift }: { gift: GiftWithRelations }) {
       <div className="relative aspect-[16/10] w-full overflow-hidden bg-secondary">
         {gift.image_url ? (
           <Image
-            src={gift.image_url}
+            src={optimizedImageUrl(gift.image_url)}
             alt={gift.business_name}
             fill
             sizes="(min-width: 768px) 33vw, 100vw"

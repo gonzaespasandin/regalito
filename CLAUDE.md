@@ -20,7 +20,9 @@
 | Lenguaje | TypeScript (strict) |
 | Estilos | Tailwind CSS v4 |
 | UI components | shadcn/ui |
-| Backend / DB | Supabase (Postgres + Auth + Storage) |
+| Backend / DB | Supabase (Postgres + RLS) |
+| Imágenes | Cloudinary (hosting + optimización con `f_auto,q_auto`) |
+| Import Excel | exceljs (parseo de `.xlsx` en server actions) |
 | Validación | Zod |
 | Formularios | react-hook-form + zod resolver |
 | Analytics | Vercel Analytics |
@@ -87,11 +89,11 @@
 ### Fase 1 — MVP
 - Setup Next.js + Tailwind + shadcn/ui.
 - Setup Supabase: schema SQL, generar tipos con `supabase gen types`.
-- Landing con hero (palabra acentuada en color), CTA al listado.
-- `/regalitos` — listado con filtros por ciudad y categoría (server-side).
+- Home (`/`) — single page: hero + listado con filtros por ciudad y categoría (server-side).
 - `/regalo/[slug]` — página detalle, OG image dinámica con `next/og`.
 - `/sumar` — formulario público de submission con validación Zod.
-- `/admin` — login con email + contraseña (credenciales en el `.env`, cookie de sesión firmada); CRUD de gifts; cola de submissions.
+- `/admin` — login con email + contraseña (credenciales en el `.env`, cookie de sesión firmada); CRUD de gifts; carga masiva desde Excel; cola de submissions.
+- Imágenes de marca en Cloudinary (file picker en el admin, optimización + cache).
 - Vercel Analytics.
 - Deploy en Vercel.
 
@@ -117,7 +119,7 @@
 - **Server Components por defecto.** `"use client"` solo cuando hace falta (forms, hooks de cliente).
 - **Mutaciones vía Server Actions.** Nada de API routes hechas a mano salvo webhooks.
 - **Validación con Zod** en el borde (forms + server actions). Tipos derivados con `z.infer`.
-- **Queries a Supabase desde el server** usando el cliente server-side. El cliente browser solo para auth.
+- **Queries a Supabase desde el server** usando el cliente server-side (publishable key, respeta RLS). El cliente service-role solo en server actions de admin.
 - **RLS habilitado** en todas las tablas. Service role solo en server actions sensibles.
 - **Slugs estables.** Generar al crear, nunca regenerar al editar el nombre.
 - **Naming:** archivos `kebab-case`, componentes `PascalCase`, funciones `camelCase`.
@@ -160,6 +162,9 @@ Ver `.env.example` para la plantilla. Variables requeridas:
 | `ADMIN_EMAIL` | server | Email del admin para entrar a `/admin` |
 | `ADMIN_PASSWORD` | server | Contraseña del admin (login email + password) |
 | `ADMIN_SESSION_SECRET` | server | Secreto para firmar la cookie de sesión del admin (HMAC) |
+| `CLOUDINARY_CLOUD_NAME` | server | Cloud name de Cloudinary (hosting de imágenes) |
+| `CLOUDINARY_API_KEY` | server | API key de Cloudinary |
+| `CLOUDINARY_API_SECRET` | **server-only** | API secret de Cloudinary |
 | `RESEND_API_KEY` | server | (Opcional Fase 1) Para emails transaccionales |
 
 **Nunca** commitear `.env` ni `.env.local`. Solo `.env.example` (sin valores reales).
@@ -167,18 +172,17 @@ Ver `.env.example` para la plantilla. Variables requeridas:
 ## 9. Progreso y próximos pasos
 
 **Hecho:**
-- ✅ Scaffolding Next.js 16 + Tailwind v4 + shadcn/ui (`button`, `card`, `input`, `select`, `dialog`).
+- ✅ Scaffolding Next.js 16 + Tailwind v4 + shadcn/ui.
 - ✅ Branding cálido aplicado (`globals.css`, paleta de sección 6).
-- ✅ Landing (hero + cómo funciona) + header/footer + placeholders `/regalitos` y `/sumar`.
-- ✅ Schema SQL Fase 1 + RLS + bucket de Storage `gift-images` aplicados en Supabase.
-- ✅ Clientes Supabase (`src/lib/supabase/`) + tipos generados.
+- ✅ Schema SQL Fase 1 + RLS aplicados en Supabase + clientes y tipos generados.
+- ✅ Home single-page: hero + listado con filtros + `/regalo/[slug]` con OG image.
+- ✅ `/sumar` — formulario público con Zod + server action → cola de `submissions`.
+- ✅ `/admin` — login email + contraseña; CRUD de gifts; carga masiva desde Excel.
+- ✅ Imágenes de marca en Cloudinary (file picker + optimización).
 
 **Próxima sesión:**
-1. `/regalitos` — listado con filtros por ciudad y categoría (server-side).
-2. `/regalo/[slug]` — detalle + OG image con `next/og`.
-3. `/sumar` — formulario público con Zod + server action → cola de `submissions`.
-4. `/admin` — login email + contraseña (credenciales en el `.env`); CRUD de gifts; cola de submissions; subida de imágenes de marca.
-5. Vercel Analytics + deploy.
+1. `/admin` — cola de moderación de `submissions` (aprobar → form de gift precargado, rechazar con notas).
+2. Vercel Analytics + deploy.
 
 ## 10. Decisiones explícitas (para no relitigar)
 

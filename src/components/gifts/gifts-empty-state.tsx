@@ -29,7 +29,7 @@ export function GiftsEmptyState({ filtered }: { filtered: boolean }) {
       <div className="flex gap-3">
         {filtered && (
           <Link
-            href="/regalitos"
+            href="/"
             className={cn(buttonVariants({ variant: "outline" }))}
           >
             Ver todos

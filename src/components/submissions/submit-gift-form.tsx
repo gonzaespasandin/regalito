@@ -243,29 +243,29 @@ export function SubmitGiftForm({ cities, categories }: SubmitGiftFormProps) {
         <FieldError message={errors.sourceUrl?.message} />
       </div>
 
-      <fieldset className="grid gap-6 rounded-2xl bg-card p-5 ring-1 ring-foreground/10 sm:grid-cols-2">
-        <legend className="px-1 text-sm font-medium">
-          Tus datos (opcional)
-        </legend>
-        <div className="flex flex-col gap-2">
-          <Label htmlFor="submitterName">Nombre</Label>
-          <Input
-            id="submitterName"
-            placeholder="Cómo te llamás"
-            {...register("submitterName")}
-          />
-          <FieldError message={errors.submitterName?.message} />
+      <div className="rounded-2xl bg-card p-5 ring-1 ring-foreground/10">
+        <p className="text-sm font-medium">Tus datos (opcional)</p>
+        <div className="mt-4 grid gap-6 sm:grid-cols-2">
+          <div className="flex flex-col gap-2">
+            <Label htmlFor="submitterName">Nombre</Label>
+            <Input
+              id="submitterName"
+              placeholder="Cómo te llamás"
+              {...register("submitterName")}
+            />
+            <FieldError message={errors.submitterName?.message} />
+          </div>
+          <div className="flex flex-col gap-2">
+            <Label htmlFor="submitterEmail">Email</Label>
+            <Input
+              id="submitterEmail"
+              placeholder="Por si necesitamos consultarte algo"
+              {...register("submitterEmail")}
+            />
+            <FieldError message={errors.submitterEmail?.message} />
+          </div>
         </div>
-        <div className="flex flex-col gap-2">
-          <Label htmlFor="submitterEmail">Email</Label>
-          <Input
-            id="submitterEmail"
-            placeholder="Por si necesitamos consultarte algo"
-            {...register("submitterEmail")}
-          />
-          <FieldError message={errors.submitterEmail?.message} />
-        </div>
-      </fieldset>
+      </div>
 
       {serverError && (
         <p className="rounded-lg bg-destructive/10 px-4 py-3 text-sm text-destructive">

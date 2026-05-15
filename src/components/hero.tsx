@@ -22,7 +22,7 @@ export function Hero() {
       </p>
       <div className="mt-10 flex flex-col gap-3 sm:flex-row">
         <Link
-          href="/regalitos"
+          href="/#regalitos"
           className={cn(
             buttonVariants({ size: "lg" }),
             "gradient-brand h-12 border-0 px-7 text-base text-white shadow-sm hover:opacity-90",
@@ -37,7 +37,7 @@ export function Hero() {
             "h-12 px-7 text-base",
           )}
         >
-          Sumá el tuyo
+          ¿Conocés uno? Sumalo
         </Link>
       </div>
     </section>

@@ -14,7 +14,7 @@ export function SiteHeader() {
         </Link>
         <nav className="flex items-center gap-2">
           <Link
-            href="/regalitos"
+            href="/#regalitos"
             className={cn(buttonVariants({ variant: "ghost", size: "sm" }))}
           >
             Regalitos
@@ -26,7 +26,7 @@ export function SiteHeader() {
               "gradient-brand border-0 text-white hover:opacity-90",
             )}
           >
-            Sumá el tuyo
+            ¿Conocés uno? Sumalo
           </Link>
         </nav>
       </div>
