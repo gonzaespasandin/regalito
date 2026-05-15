@@ -91,7 +91,7 @@
 - `/regalitos` — listado con filtros por ciudad y categoría (server-side).
 - `/regalo/[slug]` — página detalle, OG image dinámica con `next/og`.
 - `/sumar` — formulario público de submission con validación Zod.
-- `/admin` — login con magic link (Supabase Auth) + allowlist por email; CRUD de gifts; cola de submissions.
+- `/admin` — login con email + contraseña (credenciales en el `.env`, cookie de sesión firmada); CRUD de gifts; cola de submissions.
 - Vercel Analytics.
 - Deploy en Vercel.
 
@@ -157,7 +157,9 @@ Ver `.env.example` para la plantilla. Variables requeridas:
 | `NEXT_PUBLIC_SUPABASE_URL` | public | URL del proyecto Supabase |
 | `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | public | Publishable key (RLS-protected). Supabase migró de `anon` keys a publishable keys; las legacy `anon` siguen funcionando pero usamos la nueva. |
 | `SUPABASE_SERVICE_ROLE_KEY` | **server-only** | Bypass de RLS para operaciones admin |
-| `ADMIN_EMAILS` | server | CSV de emails con acceso al dashboard (ej: `me@x.com,vos@y.com`) |
+| `ADMIN_EMAIL` | server | Email del admin para entrar a `/admin` |
+| `ADMIN_PASSWORD` | server | Contraseña del admin (login email + password) |
+| `ADMIN_SESSION_SECRET` | server | Secreto para firmar la cookie de sesión del admin (HMAC) |
 | `RESEND_API_KEY` | server | (Opcional Fase 1) Para emails transaccionales |
 
 **Nunca** commitear `.env` ni `.env.local`. Solo `.env.example` (sin valores reales).
@@ -175,7 +177,7 @@ Ver `.env.example` para la plantilla. Variables requeridas:
 1. `/regalitos` — listado con filtros por ciudad y categoría (server-side).
 2. `/regalo/[slug]` — detalle + OG image con `next/og`.
 3. `/sumar` — formulario público con Zod + server action → cola de `submissions`.
-4. `/admin` — login magic link + allowlist por email; CRUD de gifts; cola de submissions; subida de imágenes de marca.
+4. `/admin` — login email + contraseña (credenciales en el `.env`); CRUD de gifts; cola de submissions; subida de imágenes de marca.
 5. Vercel Analytics + deploy.
 
 ## 10. Decisiones explícitas (para no relitigar)

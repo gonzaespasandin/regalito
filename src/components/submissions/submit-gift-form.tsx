@@ -14,7 +14,7 @@ import {
   giftSubmissionSchema,
   type GiftSubmissionInput,
 } from "@/lib/submissions/schema";
-import { submitGift } from "@/app/sumar/actions";
+import { submitGift } from "@/app/(public)/sumar/actions";
 import { cn } from "@/lib/utils";
 
 type SubmitGiftFormProps = {

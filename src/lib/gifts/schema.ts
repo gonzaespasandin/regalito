@@ -1,0 +1,53 @@
+import { z } from "zod";
+
+export const giftStatusValues = ["active", "inactive", "draft"] as const;
+
+/**
+ * Schema del gift para el panel de admin. Fuente de verdad compartida por el
+ * formulario (cliente) y las server actions (servidor).
+ */
+export const giftFormSchema = z.object({
+  businessName: z
+    .string()
+    .trim()
+    .min(2, "Poné el nombre del local o marca")
+    .max(80, "El nombre es demasiado largo"),
+  name: z
+    .string()
+    .trim()
+    .min(4, "Contá qué regalan")
+    .max(120, "El título es demasiado largo"),
+  description: z
+    .string()
+    .trim()
+    .min(10, "Sumá una descripción más larga")
+    .max(600, "La descripción es demasiado larga"),
+  cityId: z.string().uuid("Elegí una ciudad"),
+  categoryId: z.string().uuid("Elegí una categoría"),
+  address: z
+    .string()
+    .trim()
+    .min(2, "Poné la dirección o 'Todas las sucursales'")
+    .max(160, "La dirección es demasiado larga"),
+  requirements: z
+    .array(
+      z.object({
+        value: z
+          .string()
+          .trim()
+          .min(2, "Requisito demasiado corto")
+          .max(160, "Requisito demasiado largo"),
+      }),
+    )
+    .min(1, "Agregá al menos un requisito")
+    .max(8, "Con 8 requisitos alcanza"),
+  sourceUrl: z
+    .union([z.string().trim().url("Tiene que ser un link válido"), z.literal("")])
+    .optional(),
+  imageUrl: z
+    .union([z.string().trim().url("Tiene que ser un link válido"), z.literal("")])
+    .optional(),
+  status: z.enum(giftStatusValues),
+});
+
+export type GiftFormInput = z.infer<typeof giftFormSchema>;

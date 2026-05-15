@@ -26,8 +26,9 @@ export async function createSupabaseServerClient() {
               cookieStore.set(name, value, options);
             }
           } catch {
-            // Invocado desde un RSC: refrescar cookies acá no está permitido.
-            // El middleware se encarga de mantener la sesión al día.
+            // Invocado desde un RSC: escribir cookies acá no está permitido.
+            // No usamos Supabase Auth (el login del admin es propio), así que
+            // esto es inofensivo: solo aplica a queries de datos con RLS.
           }
         },
       },
