@@ -2,6 +2,8 @@ import { Hero } from "@/components/hero";
 import { GiftCard } from "@/components/gifts/gift-card";
 import { GiftFilters } from "@/components/gifts/gift-filters";
 import { GiftsEmptyState } from "@/components/gifts/gifts-empty-state";
+import { getCurrentUser } from "@/lib/auth/user";
+import { getFavoriteGiftIdSet } from "@/lib/favorites/queries";
 import { getCategories, getCities, getGifts } from "@/lib/gifts/queries";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
@@ -29,6 +31,11 @@ export default async function Home({
     cityId: city?.id,
     categoryId: category?.id,
   });
+
+  const currentUser = await getCurrentUser();
+  const favoriteIds = currentUser
+    ? await getFavoriteGiftIdSet(supabase)
+    : null;
 
   const hasFilters = Boolean(city || category);
 
@@ -67,7 +74,11 @@ export default async function Home({
         {gifts.length > 0 ? (
           <div className="mt-4 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {gifts.map((gift) => (
-              <GiftCard key={gift.id} gift={gift} />
+              <GiftCard
+                key={gift.id}
+                gift={gift}
+                isFavorited={favoriteIds ? favoriteIds.has(gift.id) : undefined}
+              />
             ))}
           </div>
         ) : (

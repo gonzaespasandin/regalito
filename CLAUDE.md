@@ -112,7 +112,7 @@
 
 ### Fase 2 — Comunidad
 - ✅ Auth pública con Google OAuth (Supabase Auth) + tabla `profiles` + onboarding de cumpleaños.
-- Favoritos.
+- ✅ Favoritos (corazón en cards/detalle, página `/favoritos`).
 - Reseñas (rating + comentario).
 - Comentarios en gifts.
 - Badge "verificado" con `verified_at` visible en cada gift.
@@ -197,8 +197,9 @@ Ver `.env.example` para la plantilla. Variables requeridas:
 - ✅ Deploy en Vercel (subdominio `.vercel.app`).
 - ✅ Multi-ciudad por regalito (M:N `gift_cities`).
 - ✅ Auth pública con Google OAuth + tabla `profiles` + página `/perfil` + banner de cumple.
+- ✅ Favoritos: tabla `favorites`, corazón en GiftCard/detalle, página `/favoritos`.
 
-**Próximo:** favoritos, reseñas, badge verificado, recordatorio por email (Fase 2 continúa).
+**Próximo:** reseñas, badge verificado, reportes, recordatorio por email (Fase 2 continúa).
 
 ## 10. Decisiones explícitas (para no relitigar)
 

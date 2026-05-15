@@ -3,8 +3,10 @@ import { NextResponse, type NextRequest } from "next/server";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 /**
- * Callback de OAuth (Google). Supabase redirige acá con `?code=...`,
- * lo intercambiamos por una sesión y mandamos al `?next` o al home.
+ * Página de aterrizaje post-login. Supabase redirige acá con `?code=...`
+ * tras la vuelta de Google; lo intercambiamos por una sesión y mandamos al
+ * `?next` o al home. El path "/ingreso" es solo cosmético: el usuario lo
+ * ve por ~200 ms antes del segundo redirect.
  */
 export async function GET(request: NextRequest) {
   const url = new URL(request.url);

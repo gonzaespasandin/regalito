@@ -4,8 +4,11 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { AlertTriangle, ArrowLeft, Check, ExternalLink, Gift, MapPin } from "lucide-react";
 
+import { FavoriteButton } from "@/components/gifts/favorite-button";
 import { buttonVariants } from "@/components/ui/button";
+import { getCurrentUser } from "@/lib/auth/user";
 import { optimizedImageUrl } from "@/lib/cloudinary";
+import { getFavoriteGiftIdSet } from "@/lib/favorites/queries";
 import { getGiftBySlug } from "@/lib/gifts/queries";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { cn } from "@/lib/utils";
@@ -42,6 +45,10 @@ export default async function GiftPage({ params }: { params: Params }) {
     notFound();
   }
 
+  const currentUser = await getCurrentUser();
+  const favoriteIds = currentUser ? await getFavoriteGiftIdSet(supabase) : null;
+  const isFavorited = favoriteIds ? favoriteIds.has(gift.id) : undefined;
+
   return (
     <main className="mx-auto w-full max-w-3xl flex-1 px-6 py-12">
       <Link
@@ -74,13 +81,16 @@ export default async function GiftPage({ params }: { params: Params }) {
         )}
       </div>
 
-      <div className="mt-8 flex flex-col gap-2">
-        <p className="text-sm font-medium text-muted-foreground">
-          {gift.business_name}
-        </p>
-        <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
-          {gift.name}
-        </h1>
+      <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+        <div className="flex flex-col gap-2">
+          <p className="text-sm font-medium text-muted-foreground">
+            {gift.business_name}
+          </p>
+          <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
+            {gift.name}
+          </h1>
+        </div>
+        <FavoriteButton giftId={gift.id} isFavorited={isFavorited} />
       </div>
 
       <p className="mt-4 text-pretty text-muted-foreground">

@@ -98,6 +98,12 @@ function UserMenu({
           {label}
         </div>
         <Link
+          href="/favoritos"
+          className="block rounded-lg px-3 py-2 text-sm transition-colors hover:bg-secondary"
+        >
+          Mis favoritos
+        </Link>
+        <Link
           href="/perfil"
           className="block rounded-lg px-3 py-2 text-sm transition-colors hover:bg-secondary"
         >

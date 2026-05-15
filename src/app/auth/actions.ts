@@ -8,7 +8,7 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 /**
  * Arranca el flow de Google OAuth: pide a Supabase la URL de Google y
- * redirige el navegador. Cuando Google vuelve, cae en /auth/callback.
+ * redirige el navegador. Cuando Google vuelve, cae en /ingreso.
  */
 export async function signInWithGoogle(formData: FormData): Promise<void> {
   const supabase = await createSupabaseServerClient();
@@ -23,7 +23,7 @@ export async function signInWithGoogle(formData: FormData): Promise<void> {
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: "google",
     options: {
-      redirectTo: `${origin}/auth/callback?next=${encodeURIComponent(next)}`,
+      redirectTo: `${origin}/ingreso?next=${encodeURIComponent(next)}`,
     },
   });
 
