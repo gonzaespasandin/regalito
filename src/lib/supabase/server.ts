@@ -26,9 +26,9 @@ export async function createSupabaseServerClient() {
               cookieStore.set(name, value, options);
             }
           } catch {
-            // Invocado desde un RSC: escribir cookies acá no está permitido.
-            // No usamos Supabase Auth (el login del admin es propio), así que
-            // esto es inofensivo: solo aplica a queries de datos con RLS.
+            // Invocado desde un RSC: escribir cookies no está permitido.
+            // El refresh de sesión sucede en el middleware (src/middleware.ts);
+            // ignorar acá es seguro y es el patrón recomendado por @supabase/ssr.
           }
         },
       },

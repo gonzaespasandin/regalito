@@ -76,9 +76,18 @@
 - `reviewed_at` timestamptz
 - `reviewer_email` text
 
-### Fase 2 (cuando se agregue auth + comunidad)
+### Fase 2 (auth pública + comunidad)
 
-- `profiles` — perfil de usuario (linked a Supabase auth.users), con birthday opcional
+**`profiles`** ✅ aplicado
+- `id` uuid pk references `auth.users(id)` on delete cascade
+- `email` text not null
+- `display_name` text (nullable; viene de Google `full_name`)
+- `avatar_url` text (nullable; viene de Google `picture`)
+- `birthday` date (nullable; habilita el recordatorio futuro)
+- `created_at` / `updated_at` timestamptz
+- Trigger `on_auth_user_created` crea la fila al loguearse por primera vez.
+- RLS: SELECT público; UPDATE solo del dueño (`auth.uid() = id`).
+
 - `reviews` — rating + texto, FK a `gifts` y a `profiles`
 - `comments` — comentarios anidados en gifts
 - `favorites` — relación M:N profiles ↔ gifts
@@ -102,7 +111,7 @@
 - Deploy en Vercel.
 
 ### Fase 2 — Comunidad
-- Auth pública de usuarios (Supabase Auth).
+- ✅ Auth pública con Google OAuth (Supabase Auth) + tabla `profiles` + onboarding de cumpleaños.
 - Favoritos.
 - Reseñas (rating + comentario).
 - Comentarios en gifts.
@@ -186,8 +195,10 @@ Ver `.env.example` para la plantilla. Variables requeridas:
 - ✅ `/admin/submissions` — cola de moderación (aprobar con form precargado, rechazar con notas).
 - ✅ Vercel Analytics integrado en el root layout.
 - ✅ Deploy en Vercel (subdominio `.vercel.app`).
+- ✅ Multi-ciudad por regalito (M:N `gift_cities`).
+- ✅ Auth pública con Google OAuth + tabla `profiles` + página `/perfil` + banner de cumple.
 
-**Fase 1 cerrada.** Próximo: Fase 2 (auth pública, favoritos, reseñas — ver §4).
+**Próximo:** favoritos, reseñas, badge verificado, recordatorio por email (Fase 2 continúa).
 
 ## 10. Decisiones explícitas (para no relitigar)
 
