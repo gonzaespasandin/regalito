@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, Check, ExternalLink, Gift, MapPin } from "lucide-react";
+import { AlertTriangle, ArrowLeft, Check, ExternalLink, Gift, MapPin } from "lucide-react";
 
 import { buttonVariants } from "@/components/ui/button";
 import { optimizedImageUrl } from "@/lib/cloudinary";
@@ -125,6 +125,18 @@ export default async function GiftPage({ params }: { params: Params }) {
           </div>
         )}
       </section>
+
+      <aside className="mt-6 flex items-start gap-3 rounded-2xl bg-amber-100/60 px-5 py-4 text-sm text-amber-950 ring-1 ring-amber-200">
+        <AlertTriangle className="mt-0.5 size-4 shrink-0" />
+        <p>
+          <strong>Confirmá antes de ir.</strong> No somos la verdad absoluta:
+          muchos locales no tienen una fuente oficial que confirme la promo y
+          los regalitos pueden cambiar, variar por sucursal o vencer sin aviso.
+          {gift.source_url
+            ? " Si podés, revisá la fuente arriba o consultá directo con el local."
+            : " Te recomendamos consultar directo con el local antes de pasar."}
+        </p>
+      </aside>
 
       <div className="mt-8">
         <Link

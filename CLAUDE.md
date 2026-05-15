@@ -179,10 +179,11 @@ Ver `.env.example` para la plantilla. Variables requeridas:
 - ✅ `/sumar` — formulario público con Zod + server action → cola de `submissions`.
 - ✅ `/admin` — login email + contraseña; CRUD de gifts; carga masiva desde Excel.
 - ✅ Imágenes de marca en Cloudinary (file picker + optimización).
+- ✅ `/admin/submissions` — cola de moderación (aprobar con form precargado, rechazar con notas).
+- ✅ Vercel Analytics integrado en el root layout.
+- ✅ Deploy en Vercel (subdominio `.vercel.app`).
 
-**Próxima sesión:**
-1. `/admin` — cola de moderación de `submissions` (aprobar → form de gift precargado, rechazar con notas).
-2. Vercel Analytics + deploy.
+**Fase 1 cerrada.** Próximo: Fase 2 (auth pública, favoritos, reseñas — ver §4).
 
 ## 10. Decisiones explícitas (para no relitigar)
 

@@ -26,6 +26,11 @@ export default async function SumarPage() {
           Contanos los detalles. Revisamos cada propuesta antes de publicarla,
           así la info queda confiable.
         </p>
+        <p className="text-sm text-muted-foreground">
+          Si tenés una fuente (post, web, screenshot del local) sumala — nos
+          ayuda a confirmar la promo. Sin fuente igual aceptamos propuestas,
+          pero las marcamos como "a confirmar con el local".
+        </p>
       </header>
 
       <SubmitGiftForm cities={cities} categories={categories} />

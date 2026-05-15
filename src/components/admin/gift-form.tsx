@@ -22,6 +22,8 @@ type GiftFormProps = {
   cities: Tables<"cities">[];
   categories: Tables<"categories">[];
   gift?: AdminGift;
+  /** Valores iniciales cuando no se edita un gift existente (ej: aprobar una submission). */
+  initial?: GiftFormInput;
   action: (input: GiftFormInput) => Promise<GiftActionResult>;
   submitLabel: string;
 };
@@ -36,8 +38,12 @@ function FieldError({ message }: { message?: string }) {
   return <p className="text-sm text-destructive">{message}</p>;
 }
 
-function buildDefaults(gift?: AdminGift): GiftFormInput {
+function buildDefaults(
+  gift?: AdminGift,
+  initial?: GiftFormInput,
+): GiftFormInput {
   if (!gift) {
+    if (initial) return initial;
     return {
       businessName: "",
       name: "",
@@ -72,6 +78,7 @@ export function GiftForm({
   cities,
   categories,
   gift,
+  initial,
   action,
   submitLabel,
 }: GiftFormProps) {
@@ -87,7 +94,7 @@ export function GiftForm({
     formState: { errors, isSubmitting },
   } = useForm<GiftFormInput>({
     resolver: zodResolver(giftFormSchema),
-    defaultValues: buildDefaults(gift),
+    defaultValues: buildDefaults(gift, initial),
   });
 
   const { fields, append, remove } = useFieldArray({

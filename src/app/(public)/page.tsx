@@ -49,6 +49,12 @@ export default async function Home({
           </p>
         </div>
 
+        <p className="mt-4 rounded-xl bg-amber-100/60 px-4 py-2.5 text-xs text-amber-950 ring-1 ring-amber-200">
+          Ojo: la info la armamos con aportes de la comunidad y muchos locales
+          no tienen fuente oficial. Antes de ir, confirmá con el local — puede
+          haber cambios o variar según la sucursal.
+        </p>
+
         <div className="mt-6">
           <GiftFilters cities={cities} categories={categories} />
         </div>

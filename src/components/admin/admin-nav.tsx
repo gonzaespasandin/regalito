@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Gift, LayoutDashboard, LogOut } from "lucide-react";
+import { Gift, Inbox, LayoutDashboard, LogOut } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -11,6 +11,7 @@ import { signOut } from "@/app/admin/login/actions";
 const links = [
   { href: "/admin", label: "Inicio", icon: LayoutDashboard },
   { href: "/admin/regalos", label: "Regalitos", icon: Gift },
+  { href: "/admin/submissions", label: "Propuestas", icon: Inbox },
 ];
 
 export function AdminNav({ email }: { email: string }) {
