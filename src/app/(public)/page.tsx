@@ -3,6 +3,7 @@ import { GiftCard } from "@/components/gifts/gift-card";
 import { GiftFilters } from "@/components/gifts/gift-filters";
 import { GiftsEmptyState } from "@/components/gifts/gifts-empty-state";
 import { getCurrentUser } from "@/lib/auth/user";
+import { getClaimCountsByGiftIds } from "@/lib/claims/queries";
 import { getFavoriteGiftIdSet } from "@/lib/favorites/queries";
 import { getCategories, getCities, getGifts } from "@/lib/gifts/queries";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
@@ -33,9 +34,13 @@ export default async function Home({
   });
 
   const currentUser = await getCurrentUser();
-  const favoriteIds = currentUser
-    ? await getFavoriteGiftIdSet(supabase)
-    : null;
+  const [favoriteIds, claimCounts] = await Promise.all([
+    currentUser ? getFavoriteGiftIdSet(supabase) : Promise.resolve(null),
+    getClaimCountsByGiftIds(
+      supabase,
+      gifts.map((gift) => gift.id),
+    ),
+  ]);
 
   const hasFilters = Boolean(city || category);
 
@@ -78,6 +83,7 @@ export default async function Home({
                 key={gift.id}
                 gift={gift}
                 isFavorited={favoriteIds ? favoriteIds.has(gift.id) : undefined}
+                claimCounts={claimCounts.get(gift.id) ?? null}
               />
             ))}
           </div>

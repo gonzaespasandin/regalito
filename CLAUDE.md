@@ -88,11 +88,12 @@
 - Trigger `on_auth_user_created` crea la fila al loguearse por primera vez.
 - RLS: SELECT público; UPDATE solo del dueño (`auth.uid() = id`).
 
-- `reviews` — rating + texto, FK a `gifts` y a `profiles`
-- `comments` — comentarios anidados en gifts
-- `favorites` — relación M:N profiles ↔ gifts
-- `reports` — reportes de "dato desactualizado", FK a `gifts`, anónimos permitidos
-- Agregar a `gifts`: `verified_at` timestamptz, `verified_by` uuid → profiles
+- `favorites` ✅ aplicado — M:N profiles ↔ gifts; RLS estricta (solo dueño lee/escribe).
+- `gift_claims` ✅ aplicado — un usuario reporta si pudo o no reclamar el regalito + comentario opcional. Reemplaza reseñas/comentarios/reportes con una sola tabla más accionable. Enum `claim_outcome` ('claimed' | 'failed'); unique (profile_id, gift_id); RLS read público, write solo dueño. Vista `gift_claim_counts` agrega claimed/failed por gift.
+- `comments` — _(deprecado: lo cubre `gift_claims`)_
+- `reviews` — _(deprecado: lo cubre `gift_claims`)_
+- `reports` — _(deprecado: un `gift_claims.outcome = 'failed'` con comentario es un reporte)_
+- Agregar a `gifts` (futuro): `verified_at` timestamptz si querés un badge oficial además del social.
 
 ## 4. Roadmap por fases
 
@@ -113,10 +114,8 @@
 ### Fase 2 — Comunidad
 - ✅ Auth pública con Google OAuth (Supabase Auth) + tabla `profiles` + onboarding de cumpleaños.
 - ✅ Favoritos (corazón en cards/detalle, página `/favoritos`).
-- Reseñas (rating + comentario).
-- Comentarios en gifts.
-- Badge "verificado" con `verified_at` visible en cada gift.
-- Botón "reportar dato desactualizado" (anónimo OK).
+- ✅ Claims unificados: "¿pudiste reclamar el regalito?" (sí/no + comentario) reemplaza reseñas, comentarios y reportes. % de éxito sirve como verificación social.
+- Badge "verificado" oficial con `verified_at` (opcional, complementa al social).
 - Recordatorio por email cerca del cumpleaños (cron de Supabase + Resend).
 
 ### Fase 3 — Crecimiento
@@ -198,8 +197,9 @@ Ver `.env.example` para la plantilla. Variables requeridas:
 - ✅ Multi-ciudad por regalito (M:N `gift_cities`).
 - ✅ Auth pública con Google OAuth + tabla `profiles` + página `/perfil` + banner de cumple.
 - ✅ Favoritos: tabla `favorites`, corazón en GiftCard/detalle, página `/favoritos`.
+- ✅ Claims: tabla `gift_claims`, sección en el detalle (pude/no pude + comentario), % éxito en GiftCard.
 
-**Próximo:** reseñas, badge verificado, reportes, recordatorio por email (Fase 2 continúa).
+**Próximo:** badge verificado oficial (opcional), recordatorio por email de cumpleaños (Fase 2 continúa).
 
 ## 10. Decisiones explícitas (para no relitigar)
 

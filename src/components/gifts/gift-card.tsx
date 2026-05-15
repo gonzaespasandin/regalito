@@ -1,7 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
-import { Gift, Heart, MapPin } from "lucide-react";
+import { Gift, Heart, MapPin, ThumbsUp } from "lucide-react";
 
+import type { ClaimCounts } from "@/lib/claims/queries";
 import { optimizedImageUrl } from "@/lib/cloudinary";
 import type { GiftWithRelations } from "@/lib/gifts/queries";
 import { cn } from "@/lib/utils";
@@ -11,9 +12,11 @@ type GiftCardProps = {
   gift: GiftWithRelations;
   /** Si el user actual la marcó como favorita. Si es undefined no mostramos el botón (anónimo). */
   isFavorited?: boolean;
+  /** Contadores de claims (pude/no pude). Si es null, no mostramos nada. */
+  claimCounts?: ClaimCounts | null;
 };
 
-export function GiftCard({ gift, isFavorited }: GiftCardProps) {
+export function GiftCard({ gift, isFavorited, claimCounts }: GiftCardProps) {
   const requirementsCount = gift.requirements.length;
   const showFavoriteButton = typeof isFavorited === "boolean";
 
@@ -49,7 +52,7 @@ export function GiftCard({ gift, isFavorited }: GiftCardProps) {
           <p className="line-clamp-2 text-sm text-muted-foreground">
             {gift.description}
           </p>
-          <div className="mt-auto flex items-center gap-4 pt-3 text-xs text-muted-foreground">
+          <div className="mt-auto flex flex-wrap items-center gap-x-4 gap-y-1 pt-3 text-xs text-muted-foreground">
             {gift.cities.length > 0 && (
               <span className="inline-flex items-center gap-1">
                 <MapPin className="size-3.5" />
@@ -60,6 +63,17 @@ export function GiftCard({ gift, isFavorited }: GiftCardProps) {
             <span>
               {requirementsCount} requisito{requirementsCount === 1 ? "" : "s"}
             </span>
+            {claimCounts && claimCounts.claimed + claimCounts.failed > 0 ? (
+              <span className="inline-flex items-center gap-1">
+                <ThumbsUp className="size-3.5 text-primary" />
+                {Math.round(
+                  (claimCounts.claimed /
+                    (claimCounts.claimed + claimCounts.failed)) *
+                    100,
+                )}
+                % ({claimCounts.claimed + claimCounts.failed})
+              </span>
+            ) : null}
           </div>
         </div>
       </Link>

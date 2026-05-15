@@ -4,9 +4,15 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { AlertTriangle, ArrowLeft, Check, ExternalLink, Gift, MapPin } from "lucide-react";
 
+import { ClaimSection } from "@/components/gifts/claim-section";
 import { FavoriteButton } from "@/components/gifts/favorite-button";
 import { buttonVariants } from "@/components/ui/button";
 import { getCurrentUser } from "@/lib/auth/user";
+import {
+  getClaimCounts,
+  getClaimsForGift,
+  getOwnClaim,
+} from "@/lib/claims/queries";
 import { optimizedImageUrl } from "@/lib/cloudinary";
 import { getFavoriteGiftIdSet } from "@/lib/favorites/queries";
 import { getGiftBySlug } from "@/lib/gifts/queries";
@@ -48,6 +54,17 @@ export default async function GiftPage({ params }: { params: Params }) {
   const currentUser = await getCurrentUser();
   const favoriteIds = currentUser ? await getFavoriteGiftIdSet(supabase) : null;
   const isFavorited = favoriteIds ? favoriteIds.has(gift.id) : undefined;
+
+  const [claimCounts, ownClaim, otherClaims] = await Promise.all([
+    getClaimCounts(supabase, gift.id),
+    currentUser
+      ? getOwnClaim(supabase, gift.id, currentUser.user.id)
+      : Promise.resolve(null),
+    getClaimsForGift(supabase, gift.id, {
+      excludeProfileId: currentUser?.user.id,
+      limit: 30,
+    }),
+  ]);
 
   return (
     <main className="mx-auto w-full max-w-3xl flex-1 px-6 py-12">
@@ -149,6 +166,15 @@ export default async function GiftPage({ params }: { params: Params }) {
             : " Te recomendamos consultar directo con el local antes de pasar."}
         </p>
       </aside>
+
+      <ClaimSection
+        giftId={gift.id}
+        counts={claimCounts}
+        ownClaim={ownClaim}
+        isLoggedIn={Boolean(currentUser)}
+        signInNext={`/regalo/${gift.slug}`}
+        comments={otherClaims}
+      />
 
       <div className="mt-8">
         <Link

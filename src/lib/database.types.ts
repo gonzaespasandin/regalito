@@ -128,6 +128,51 @@ export type Database = {
           },
         ]
       }
+      gift_claims: {
+        Row: {
+          comment: string | null
+          created_at: string
+          gift_id: string
+          id: string
+          outcome: Database["public"]["Enums"]["claim_outcome"]
+          profile_id: string
+          updated_at: string
+        }
+        Insert: {
+          comment?: string | null
+          created_at?: string
+          gift_id: string
+          id?: string
+          outcome: Database["public"]["Enums"]["claim_outcome"]
+          profile_id: string
+          updated_at?: string
+        }
+        Update: {
+          comment?: string | null
+          created_at?: string
+          gift_id?: string
+          id?: string
+          outcome?: Database["public"]["Enums"]["claim_outcome"]
+          profile_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "gift_claims_gift_id_fkey"
+            columns: ["gift_id"]
+            isOneToOne: false
+            referencedRelation: "gifts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "gift_claims_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       gifts: {
         Row: {
           address: string
@@ -252,12 +297,28 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      gift_claim_counts: {
+        Row: {
+          claimed_count: number | null
+          failed_count: number | null
+          gift_id: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "gift_claims_gift_id_fkey"
+            columns: ["gift_id"]
+            isOneToOne: false
+            referencedRelation: "gifts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
       [_ in never]: never
     }
     Enums: {
+      claim_outcome: "claimed" | "failed"
       gift_status: "active" | "inactive" | "draft"
       submission_status: "pending" | "approved" | "rejected"
     }
@@ -387,6 +448,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      claim_outcome: ["claimed", "failed"],
       gift_status: ["active", "inactive", "draft"],
       submission_status: ["pending", "approved", "rejected"],
     },
