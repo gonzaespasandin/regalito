@@ -73,7 +73,7 @@ export default async function AdminGiftsPage() {
             <TableHeader>
               <TableRow>
                 <TableHead>Regalito</TableHead>
-                <TableHead>Ciudad</TableHead>
+                <TableHead>Ciudades</TableHead>
                 <TableHead>Categoría</TableHead>
                 <TableHead>Estado</TableHead>
                 <TableHead className="text-right">Acción</TableHead>
@@ -89,7 +89,9 @@ export default async function AdminGiftsPage() {
                     </span>
                   </TableCell>
                   <TableCell className="text-muted-foreground">
-                    {gift.city?.name ?? "—"}
+                    {gift.cities.length > 0
+                      ? gift.cities.map((city) => city.name).join(", ")
+                      : "—"}
                   </TableCell>
                   <TableCell className="text-muted-foreground">
                     {gift.category?.name ?? "—"}

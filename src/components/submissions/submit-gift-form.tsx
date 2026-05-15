@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useFieldArray, useForm } from "react-hook-form";
+import { Controller, useFieldArray, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CheckCircle2, Plus, X } from "lucide-react";
 
@@ -48,7 +48,7 @@ export function SubmitGiftForm({ cities, categories }: SubmitGiftFormProps) {
       businessName: "",
       name: "",
       description: "",
-      citySlug: "",
+      citySlugs: [],
       categorySlug: "",
       address: "",
       requirements: [{ value: "" }],
@@ -135,40 +135,61 @@ export function SubmitGiftForm({ cities, categories }: SubmitGiftFormProps) {
         <FieldError message={errors.description?.message} />
       </div>
 
-      <div className="grid gap-6 sm:grid-cols-2">
-        <div className="flex flex-col gap-2">
-          <Label htmlFor="citySlug">Ciudad</Label>
-          <select
-            id="citySlug"
-            className={selectClass}
-            {...register("citySlug")}
-          >
-            <option value="">Elegí una ciudad</option>
-            {cities.map((city) => (
-              <option key={city.id} value={city.slug}>
-                {city.name}
-              </option>
-            ))}
-          </select>
-          <FieldError message={errors.citySlug?.message} />
-        </div>
+      <div className="flex flex-col gap-2">
+        <Label>Ciudades</Label>
+        <p className="-mt-1 text-sm text-muted-foreground">
+          Marcá todas las que correspondan (si la promo aplica en varias).
+        </p>
+        <Controller
+          control={control}
+          name="citySlugs"
+          render={({ field }) => (
+            <div className="grid gap-2 rounded-lg border border-input bg-card p-3 sm:grid-cols-2">
+              {cities.map((city) => {
+                const checked = field.value?.includes(city.slug) ?? false;
+                return (
+                  <label
+                    key={city.id}
+                    className="inline-flex cursor-pointer items-center gap-2 text-sm"
+                  >
+                    <input
+                      type="checkbox"
+                      className="size-4 rounded border-input"
+                      checked={checked}
+                      onChange={(event) => {
+                        const next = event.target.checked
+                          ? [...(field.value ?? []), city.slug]
+                          : (field.value ?? []).filter(
+                              (slug) => slug !== city.slug,
+                            );
+                        field.onChange(next);
+                      }}
+                    />
+                    {city.name}
+                  </label>
+                );
+              })}
+            </div>
+          )}
+        />
+        <FieldError message={errors.citySlugs?.message} />
+      </div>
 
-        <div className="flex flex-col gap-2">
-          <Label htmlFor="categorySlug">Categoría</Label>
-          <select
-            id="categorySlug"
-            className={selectClass}
-            {...register("categorySlug")}
-          >
-            <option value="">Elegí una categoría</option>
-            {categories.map((category) => (
-              <option key={category.id} value={category.slug}>
-                {category.name}
-              </option>
-            ))}
-          </select>
-          <FieldError message={errors.categorySlug?.message} />
-        </div>
+      <div className="flex flex-col gap-2">
+        <Label htmlFor="categorySlug">Categoría</Label>
+        <select
+          id="categorySlug"
+          className={selectClass}
+          {...register("categorySlug")}
+        >
+          <option value="">Elegí una categoría</option>
+          {categories.map((category) => (
+            <option key={category.id} value={category.slug}>
+              {category.name}
+            </option>
+          ))}
+        </select>
+        <FieldError message={errors.categorySlug?.message} />
       </div>
 
       <div className="flex flex-col gap-2">

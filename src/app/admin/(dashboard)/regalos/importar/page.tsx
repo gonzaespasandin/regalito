@@ -7,7 +7,10 @@ const columns = [
   { name: "marca", note: "Local o marca. Requerido." },
   { name: "titulo", note: "Qué regalan. Requerido." },
   { name: "descripcion", note: "Detalle del regalito. Requerido." },
-  { name: "ciudad", note: "Nombre o slug de una ciudad existente. Requerido." },
+  {
+    name: "ciudad",
+    note: "Nombre o slug de una ciudad existente. Para varias, separá con ';' o ','. Requerido.",
+  },
   {
     name: "categoria",
     note: "Nombre o slug de una categoría existente. Requerido.",

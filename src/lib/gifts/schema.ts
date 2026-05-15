@@ -22,7 +22,9 @@ export const giftFormSchema = z.object({
     .trim()
     .min(10, "Sumá una descripción más larga")
     .max(600, "La descripción es demasiado larga"),
-  cityId: z.string().uuid("Elegí una ciudad"),
+  cityIds: z
+    .array(z.string().uuid())
+    .min(1, "Elegí al menos una ciudad"),
   categoryId: z.string().uuid("Elegí una categoría"),
   address: z
     .string()

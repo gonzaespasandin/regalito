@@ -20,7 +20,9 @@ export const giftSubmissionSchema = z.object({
     .trim()
     .min(10, "Sumá una descripción un poco más larga")
     .max(600, "La descripción es demasiado larga"),
-  citySlug: z.string().min(1, "Elegí una ciudad"),
+  citySlugs: z
+    .array(z.string().min(1))
+    .min(1, "Elegí al menos una ciudad"),
   categorySlug: z.string().min(1, "Elegí una categoría"),
   address: z
     .string()

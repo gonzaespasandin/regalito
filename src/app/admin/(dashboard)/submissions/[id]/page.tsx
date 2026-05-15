@@ -46,14 +46,14 @@ function formatDateTime(iso: string): string {
 
 function buildInitial(
   payload: SubmissionPayload,
-  cityId: string,
+  cityIds: string[],
   categoryId: string,
 ): GiftFormInput {
   return {
     businessName: payload.business_name,
     name: payload.name,
     description: payload.description,
-    cityId,
+    cityIds,
     categoryId,
     address: payload.address,
     requirements:
@@ -157,9 +157,9 @@ function ReadOnlyPayload({ payload }: { payload: SubmissionPayload }) {
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
           <dt className="text-xs uppercase tracking-wide text-muted-foreground">
-            Ciudad
+            Ciudades
           </dt>
-          <dd>{payload.city_slug}</dd>
+          <dd>{payload.city_slugs.join(", ") || "—"}</dd>
         </div>
         <div>
           <dt className="text-xs uppercase tracking-wide text-muted-foreground">
@@ -207,14 +207,19 @@ export default async function ReviewSubmissionPage({
     getCategories(supabase),
   ]);
 
-  const city = cities.find((item) => item.slug === submission.payload.city_slug);
+  const matchedCities = submission.payload.city_slugs
+    .map((slug) => cities.find((item) => item.slug === slug))
+    .filter((value): value is (typeof cities)[number] => Boolean(value));
+  const missingCitySlugs = submission.payload.city_slugs.filter(
+    (slug) => !cities.some((item) => item.slug === slug),
+  );
   const category = categories.find(
     (item) => item.slug === submission.payload.category_slug,
   );
 
   const initial = buildInitial(
     submission.payload,
-    city?.id ?? "",
+    matchedCities.map((city) => city.id),
     category?.id ?? "",
   );
 
@@ -241,15 +246,16 @@ export default async function ReviewSubmissionPage({
 
       {submission.status === "pending" ? (
         <>
-          {(!city || !category) && (
+          {(missingCitySlugs.length > 0 || !category) && (
             <p className="mt-6 rounded-lg bg-amber-100/70 px-4 py-3 text-sm text-amber-900 ring-1 ring-amber-200">
-              {!city && (
+              {missingCitySlugs.length > 0 && (
                 <>
-                  La ciudad <code>{submission.payload.city_slug}</code> del envío
-                  no existe. Elegí una antes de aprobar.
+                  No encontramos estas ciudades del envío:{" "}
+                  <code>{missingCitySlugs.join(", ")}</code>. Elegí las
+                  correctas antes de aprobar.
                 </>
               )}
-              {!city && !category && <br />}
+              {missingCitySlugs.length > 0 && !category && <br />}
               {!category && (
                 <>
                   La categoría <code>{submission.payload.category_slug}</code> del

@@ -8,11 +8,11 @@ import type { GiftFormInput } from "./schema";
 
 type SupabaseDb = SupabaseClient<Database>;
 
-const GIFT_ADMIN_SELECT = "*, city:cities(*), category:categories(*)";
+const GIFT_ADMIN_SELECT = "*, cities(*), category:categories(*)";
 const UNIQUE_VIOLATION = "23505";
 
 export type AdminGift = Tables<"gifts"> & {
-  city: Tables<"cities"> | null;
+  cities: Tables<"cities">[];
   category: Tables<"categories"> | null;
 };
 
@@ -20,7 +20,7 @@ export type GiftMutationResult =
   | { ok: true; id: string }
   | { ok: false; error: string };
 
-/** Todos los gifts (cualquier estado), con ciudad y categoría. */
+/** Todos los gifts (cualquier estado), con ciudades y categoría. */
 export async function getAllGifts(supabase: SupabaseDb): Promise<AdminGift[]> {
   const { data, error } = await supabase
     .from("gifts")
@@ -46,13 +46,12 @@ export async function getGiftById(
   return data;
 }
 
-/** Mapea el input del form al shape de la fila `gifts` (snake_case). */
+/** Mapea el input del form al shape de la fila `gifts` (snake_case, sin ciudades). */
 function toGiftRow(input: GiftFormInput) {
   return {
     name: input.name,
     business_name: input.businessName,
     description: input.description,
-    city_id: input.cityId,
     category_id: input.categoryId,
     address: input.address,
     requirements: input.requirements.map((requirement) => requirement.value),
@@ -60,6 +59,27 @@ function toGiftRow(input: GiftFormInput) {
     image_url: input.imageUrl?.trim() ? input.imageUrl.trim() : null,
     status: input.status,
   };
+}
+
+/** Reemplaza el set de ciudades de un gift por el dado. */
+async function syncGiftCities(
+  supabase: SupabaseDb,
+  giftId: string,
+  cityIds: string[],
+): Promise<{ error: string | null }> {
+  const { error: deleteError } = await supabase
+    .from("gift_cities")
+    .delete()
+    .eq("gift_id", giftId);
+  if (deleteError) return { error: "No se pudieron actualizar las ciudades." };
+
+  if (cityIds.length === 0) return { error: null };
+
+  const rows = cityIds.map((cityId) => ({ gift_id: giftId, city_id: cityId }));
+  const { error: insertError } = await supabase.from("gift_cities").insert(rows);
+  if (insertError) return { error: "No se pudieron actualizar las ciudades." };
+
+  return { error: null };
 }
 
 /** Crea un gift. El slug se genera del nombre y queda fijo de por vida. */
@@ -84,6 +104,13 @@ export async function createGift(
     return { ok: false, error: "No se pudo crear el regalito." };
   }
 
+  const sync = await syncGiftCities(supabase, data.id, input.cityIds);
+  if (sync.error) {
+    // Rollback manual: borrar el gift huérfano si no pudimos asignar ciudades.
+    await supabase.from("gifts").delete().eq("id", data.id);
+    return { ok: false, error: sync.error };
+  }
+
   return { ok: true, id: data.id };
 }
 
@@ -101,10 +128,14 @@ export async function updateGift(
   if (error) {
     return { ok: false, error: "No se pudo actualizar el regalito." };
   }
+
+  const sync = await syncGiftCities(supabase, id, input.cityIds);
+  if (sync.error) return { ok: false, error: sync.error };
+
   return { ok: true, id };
 }
 
-/** Borra un gift. */
+/** Borra un gift. Las filas de `gift_cities` se borran en cascada. */
 export async function deleteGift(
   supabase: SupabaseDb,
   id: string,

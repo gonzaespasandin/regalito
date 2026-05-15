@@ -48,18 +48,41 @@ export async function importGiftsAction(
   let imported = 0;
 
   for (const gift of parsed.valid) {
-    const { error } = await supabase.from("gifts").insert(gift);
-    if (error) {
+    const { city_ids, ...giftRow } = gift;
+    const { data, error } = await supabase
+      .from("gifts")
+      .insert(giftRow)
+      .select("id")
+      .single();
+    if (error || !data) {
       errors.push({
         row: 0,
         message:
-          error.code === "23505"
+          error?.code === "23505"
             ? `"${gift.name}": ya existe un regalito con ese título`
             : `"${gift.name}": no se pudo insertar`,
       });
-    } else {
-      imported += 1;
+      continue;
     }
+
+    const cityRows = city_ids.map((cityId) => ({
+      gift_id: data.id,
+      city_id: cityId,
+    }));
+    const { error: citiesError } = await supabase
+      .from("gift_cities")
+      .insert(cityRows);
+    if (citiesError) {
+      // Rollback: no queremos un gift huérfano sin ciudades.
+      await supabase.from("gifts").delete().eq("id", data.id);
+      errors.push({
+        row: 0,
+        message: `"${gift.name}": no se pudieron asociar las ciudades`,
+      });
+      continue;
+    }
+
+    imported += 1;
   }
 
   revalidatePath("/admin/regalos");

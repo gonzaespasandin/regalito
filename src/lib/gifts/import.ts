@@ -8,7 +8,7 @@ import { slugify } from "@/lib/slug";
 
 type GiftStatus = Database["public"]["Enums"]["gift_status"];
 
-/** Fila lista para insertar en `gifts`. */
+/** Fila lista para insertar en `gifts` + sus ciudades. */
 export type ParsedGiftRow = {
   slug: string;
   name: string;
@@ -18,7 +18,7 @@ export type ParsedGiftRow = {
   address: string;
   image_url: string | null;
   source_url: string | null;
-  city_id: string;
+  city_ids: string[];
   category_id: string;
   status: GiftStatus;
 };
@@ -124,11 +124,30 @@ export async function parseGiftsExcel(
     }
     const value = parsed.data;
 
-    const city = findBySlugOrName(cities, value.ciudad);
-    if (!city) {
-      errors.push({ row, message: `ciudad desconocida: ${value.ciudad}` });
+    const cityTokens = value.ciudad
+      .split(/[;,\n]/)
+      .map((token) => token.trim())
+      .filter(Boolean);
+    const matchedCities = cityTokens.map((token) => ({
+      token,
+      city: findBySlugOrName(cities, token),
+    }));
+    const unknownCities = matchedCities
+      .filter((match) => !match.city)
+      .map((match) => match.token);
+    if (cityTokens.length === 0 || unknownCities.length > 0) {
+      errors.push({
+        row,
+        message:
+          cityTokens.length === 0
+            ? "falta la ciudad"
+            : `ciudad(es) desconocida(s): ${unknownCities.join(", ")}`,
+      });
       continue;
     }
+    const cityIds = Array.from(
+      new Set(matchedCities.map((match) => match.city!.id)),
+    );
     const category = findBySlugOrName(categories, value.categoria);
     if (!category) {
       errors.push({
@@ -164,7 +183,7 @@ export async function parseGiftsExcel(
       address: value.direccion,
       image_url: value.imagen ? value.imagen : null,
       source_url: value.fuente ? value.fuente : null,
-      city_id: city.id,
+      city_ids: cityIds,
       category_id: category.id,
       status,
     });

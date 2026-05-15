@@ -53,13 +53,17 @@
 - `description` text
 - `requirements` text[] (lista de requisitos: "Tener cuenta en Starbucks Rewards", "DNI con fecha de nacimiento", etc.)
 - `address` text (dirección o "Todas las sucursales")
-- `image_url` text (nullable; foto/logo de la marca, apunta a un objeto del bucket de Storage `gift-images`)
-- `city_id` uuid fk → cities
+- `image_url` text (nullable; URL de Cloudinary)
 - `category_id` uuid fk → categories
 - `source_url` text (link al post/web donde se confirma la promo)
 - `status` enum: `active` | `inactive` | `draft`
 - `created_at` timestamptz default now()
 - `updated_at` timestamptz
+
+**`gift_cities`** (M:N — un mismo regalito puede aplicar a varias ciudades)
+- `gift_id` uuid fk → gifts on delete cascade
+- `city_id` uuid fk → cities on delete restrict
+- pk compuesta (`gift_id`, `city_id`)
 
 **`submissions`**
 - `id` uuid pk

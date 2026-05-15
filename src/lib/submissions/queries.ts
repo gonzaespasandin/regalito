@@ -14,7 +14,7 @@ export type SubmissionPayload = {
   business_name: string;
   name: string;
   description: string;
-  city_slug: string;
+  city_slugs: string[];
   category_slug: string;
   address: string;
   requirements: string[];
@@ -39,7 +39,7 @@ export async function createSubmission(
     business_name: input.businessName,
     name: input.name,
     description: input.description,
-    city_slug: input.citySlug,
+    city_slugs: input.citySlugs,
     category_slug: input.categorySlug,
     address: input.address,
     requirements: input.requirements.map((requirement) => requirement.value),

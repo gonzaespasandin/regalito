@@ -130,7 +130,9 @@ export default async function AdminSubmissionsPage({
                       </span>
                     </TableCell>
                     <TableCell className="text-muted-foreground">
-                      <span className="block">{submission.payload.city_slug}</span>
+                      <span className="block">
+                        {submission.payload.city_slugs.join(", ")}
+                      </span>
                       <span className="block text-xs">
                         {submission.payload.category_slug}
                       </span>

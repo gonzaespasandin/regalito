@@ -43,10 +43,11 @@ export function GiftCard({ gift }: { gift: GiftWithRelations }) {
           {gift.description}
         </p>
         <div className="mt-auto flex items-center gap-4 pt-3 text-xs text-muted-foreground">
-          {gift.city && (
+          {gift.cities.length > 0 && (
             <span className="inline-flex items-center gap-1">
               <MapPin className="size-3.5" />
-              {gift.city.name}
+              {gift.cities[0].name}
+              {gift.cities.length > 1 ? ` +${gift.cities.length - 1}` : ""}
             </span>
           )}
           <span>

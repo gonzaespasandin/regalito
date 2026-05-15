@@ -29,7 +29,7 @@ export default async function SumarPage() {
         <p className="text-sm text-muted-foreground">
           Si tenés una fuente (post, web, screenshot del local) sumala — nos
           ayuda a confirmar la promo. Sin fuente igual aceptamos propuestas,
-          pero las marcamos como "a confirmar con el local".
+          pero las marcamos como &ldquo;a confirmar con el local&rdquo;.
         </p>
       </header>
 

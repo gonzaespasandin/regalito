@@ -107,7 +107,9 @@ export default async function GiftPage({ params }: { params: Params }) {
           <p className="mt-1 inline-flex items-center gap-1.5 text-sm">
             <MapPin className="size-4" />
             {gift.address}
-            {gift.city ? ` · ${gift.city.name}` : ""}
+            {gift.cities.length > 0
+              ? ` · ${gift.cities.map((city) => city.name).join(", ")}`
+              : ""}
           </p>
         </div>
         {gift.source_url && (

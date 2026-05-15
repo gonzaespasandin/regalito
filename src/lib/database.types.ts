@@ -62,12 +62,44 @@ export type Database = {
         }
         Relationships: []
       }
+      gift_cities: {
+        Row: {
+          city_id: string
+          created_at: string
+          gift_id: string
+        }
+        Insert: {
+          city_id: string
+          created_at?: string
+          gift_id: string
+        }
+        Update: {
+          city_id?: string
+          created_at?: string
+          gift_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "gift_cities_city_id_fkey"
+            columns: ["city_id"]
+            isOneToOne: false
+            referencedRelation: "cities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "gift_cities_gift_id_fkey"
+            columns: ["gift_id"]
+            isOneToOne: false
+            referencedRelation: "gifts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       gifts: {
         Row: {
           address: string
           business_name: string
           category_id: string
-          city_id: string
           created_at: string
           description: string
           id: string
@@ -83,7 +115,6 @@ export type Database = {
           address: string
           business_name: string
           category_id: string
-          city_id: string
           created_at?: string
           description: string
           id?: string
@@ -99,7 +130,6 @@ export type Database = {
           address?: string
           business_name?: string
           category_id?: string
-          city_id?: string
           created_at?: string
           description?: string
           id?: string
@@ -117,13 +147,6 @@ export type Database = {
             columns: ["category_id"]
             isOneToOne: false
             referencedRelation: "categories"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "gifts_city_id_fkey"
-            columns: ["city_id"]
-            isOneToOne: false
-            referencedRelation: "cities"
             referencedColumns: ["id"]
           },
         ]
