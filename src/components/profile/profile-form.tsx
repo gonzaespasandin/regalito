@@ -98,7 +98,7 @@ export function ProfileForm({ profile }: { profile: Tables<"profiles"> }) {
       )}
 
       {saved && !serverError && (
-        <p className="inline-flex items-center gap-2 rounded-lg bg-primary/10 px-4 py-3 text-sm text-primary">
+        <p className="inline-flex items-center gap-2 rounded-lg bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
           <CheckCircle2 className="size-4" />
           Listo, perfil actualizado.
         </p>

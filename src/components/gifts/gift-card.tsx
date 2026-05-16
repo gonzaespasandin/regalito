@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { Gift, Heart, MapPin, ThumbsDown, ThumbsUp } from "lucide-react";
+import { CheckCircle2, Gift, Heart, MapPin, ThumbsDown, ThumbsUp } from "lucide-react";
 
 import type { ClaimCounts } from "@/lib/claims/queries";
 import { optimizedImageUrl } from "@/lib/cloudinary";
@@ -56,7 +56,7 @@ export function GiftCard({
           )}
         </div>
 
-        <div className="flex flex-1 flex-col gap-2 p-5">
+        <div className={cn("flex flex-1 flex-col gap-2 p-5", showClaimButtons && "pb-14")}>
           <p className="text-sm font-medium text-muted-foreground">
             {gift.business_name}
           </p>
@@ -77,7 +77,7 @@ export function GiftCard({
             </span>
             {claimCounts && claimCounts.claimed + claimCounts.failed > 0 ? (
               <span className="inline-flex items-center gap-1">
-                <ThumbsUp className="size-3.5 text-emerald-600" />
+                <CheckCircle2 className="size-3.5 text-emerald-600" />
                 {Math.round(
                   (claimCounts.claimed /
                     (claimCounts.claimed + claimCounts.failed)) *

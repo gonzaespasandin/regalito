@@ -22,7 +22,7 @@ export async function SiteHeader() {
         <nav className="flex items-center gap-2">
           <Link
             href="/#regalitos"
-            className={cn(buttonVariants({ variant: "ghost", size: "sm" }))}
+            className={cn(buttonVariants({ variant: "ghost", size: "sm" }), "hidden sm:inline-flex")}
           >
             Regalitos
           </Link>
@@ -33,7 +33,8 @@ export async function SiteHeader() {
               "gradient-brand border-0 text-white hover:opacity-90",
             )}
           >
-            ¿Conocés uno? Sumalo
+            <span className="sm:hidden">Sumalo</span>
+            <span className="hidden sm:inline">¿Conocés uno? Sumalo</span>
           </Link>
 
           {current ? (
